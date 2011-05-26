@@ -1,6 +1,7 @@
 ## Sample Usage
 
 A block of code is worth a thousand words.
+
     require 'rubygems'
     gem 'ruby-factual'
     require 'factual'
