@@ -260,19 +260,22 @@ module Factual
       @adapter     = @table.adapter
 
       if row_data.empty? && subject_key
+        single_row_mode = true
         row_data = @adapter.read_row(@table_key, subject_key) 
       end
+
+      idx_offset = single_row_mode ? 1 : 0;
 
       @subject     = []
       @fields.each_with_index do |f, idx|
         next unless f["isPrimary"]
-        @subject << row_data[idx]
+        @subject << row_data[idx + idx_offset]
       end
 
       @facts_hash  = {}
       @fields.each_with_index do |f, idx|
         next if f["isPrimary"]
-        @facts_hash[f["field_ref"]] = Fact.new(@table, @subject_key, f, row_data[idx])
+        @facts_hash[f["field_ref"]] = Fact.new(@table, @subject_key, f, row_data[idx + idx_offset])
       end
     end
 

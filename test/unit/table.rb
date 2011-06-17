@@ -70,4 +70,9 @@ class TableTest < Factual::TestCase # :nodoc:
   def test_adding_row
     row = @table.input(:two_letter_abbrev => 'NE', :state => 'Nebraska')
   end
+  
+  def test_row
+    row = Factual::Row.new(@table, SUBJECT_KEY)
+    assert_equal row['state'].value, 'California'
+  end
 end

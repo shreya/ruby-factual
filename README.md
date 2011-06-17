@@ -29,6 +29,10 @@ A block of code is worth a thousand words.
       end
     end
     
+    # you can also get rows by search
+    row = table.search("hawaii").find_one
+    puts row["state"]
+
     # add a row
     ret = table.input(:state => "Nebraska", :two_letter_abbrev => "NE")
     
