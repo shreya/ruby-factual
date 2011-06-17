@@ -1,5 +1,5 @@
-require 'lib/factual'
-require 'test/unit/helper'
+require './lib/factual'
+require './test/unit/helper'
 
 class TableTest < Factual::TestCase # :nodoc:
   def setup
@@ -21,6 +21,14 @@ class TableTest < Factual::TestCase # :nodoc:
     end
 
     assert_equal states.length, TOTAL_ROWS
+  end
+
+  def test_search
+    row = @table.search('hawaii').find_one
+    assert_equal row["state"].value, "hawaii"
+
+    row = @table.search('hi', 'hawaii').find_one
+    assert_equal row["state"].value, "hawaii"
   end
 
   def test_filtering
@@ -61,13 +69,5 @@ class TableTest < Factual::TestCase # :nodoc:
 
   def test_adding_row
     row = @table.input(:two_letter_abbrev => 'NE', :state => 'Nebraska')
-  end
-
-  def test_row
-    row = Factual::Row.new(@table, SUBJECT_KEY)
-    assert_equal row["state"].value, "California"
-  end
-
-  def test_fact
   end
 end

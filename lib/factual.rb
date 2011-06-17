@@ -94,6 +94,20 @@ module Factual
       return self
     end
 
+    # Define table search queries, it can be chained before +find_one+ or +each_row+.
+    # 
+    # The params can be:
+    # * A query string
+    # * An array of query strings
+    #
+    # Samples:
+    #   table.serach('starbucks').find_one # one query
+    #   table.search('starbucks', 'burger king').find_one # multiple queries
+    def search(*queries)
+      @searches = queries
+      return self
+    end
+
     # Define table filters, it can be chained before +find_one+ or +each_row+.
     # 
     # The params can be:
@@ -132,8 +146,13 @@ module Factual
     # Samples:
     # * <tt>table.filter(:state => 'CA').find_one</tt>
     # * <tt>table.filter(:state => 'CA').sort(:city => 1).find_one</tt>
+    # * <tt>table.filter(:state => 'CA').search('starbucks').sort(:city => 1).find_one</tt>
     def find_one
-      resp = @adapter.read_table(@table_key, @filters, @sorts, 1)
+      resp = @adapter.read_table(@table_key, 
+          :filters   => @filters, 
+          :searches  => @searches, 
+          :sorts     => @sorts, 
+          :page_size => 1)
       row_data = resp["data"].first
 
       if row_data.is_a?(Array)
@@ -147,11 +166,16 @@ module Factual
     # An iterator on each row (a Factual::Row object) of the filtered and/or sorted table data
     #
     # Samples:
-    #   table.filter(:state => 'CA').sort(:city => 1).each do |row|
+    #   table.filter(:state => 'CA').search('starbucks').sort(:city => 1).each do |row|
     #     puts row.inspect
     #   end
     def each_row
-      resp = @adapter.read_table(@table_key, @filters, @sorts, @page_size, @page)
+      resp = @adapter.read_table(@table_key, 
+          :filters   => @filters, 
+          :searches  => @searches, 
+          :sorts     => @sorts, 
+          :page_size => @page_size, 
+          :page      => @page)
 
       @total_rows = resp["total_rows"]
       rows = resp["data"]
@@ -383,11 +407,19 @@ module Factual
       return row_data
     end
 
-    def read_table(table_key, filters=nil, sorts=nil, page_size=nil, page=nil)
+    def read_table(table_key, options={})
+      filters   = options[:filters]
+      sorts     = options[:sorts]
+      searches  = options[:searches]
+      page_size = options[:page_size]
+      page      = options[:page]
+
       limit = page_size.to_i 
       limit = DEFAULT_LIMIT unless limit > 0
       offset = (page.to_i - 1) * limit
       offset = 0 unless offset > 0
+
+      filters  = (filters || {}).merge( "$search" => searches) if searches
 
       filters_query = "&filters=" + CGI.escape(filters.to_json) if filters
 
@@ -396,7 +428,8 @@ module Factual
         sorts_query = "&sort=" + sorts.to_json
       end
 
-      url  = "/tables/#{table_key}/read.jsaml?limit=#{limit}&offset=#{offset}" + filters_query.to_s + sorts_query.to_s
+      url  = "/tables/#{table_key}/read.jsaml?limit=#{limit}&offset=#{offset}" 
+      url += filters_query.to_s + sorts_query.to_s
       resp = api_call(url)
 
       return resp["response"]

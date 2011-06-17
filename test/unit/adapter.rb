@@ -40,7 +40,7 @@ class AdapterTest < Factual::TestCase # :nodoc:
   end
 
   def test_reading_table_with_filter
-    resp = @adapter.read_table(TABLE_KEY, {:two_letter_abbrev => 'CA'})
+    resp = @adapter.read_table(TABLE_KEY, :filters => {:two_letter_abbrev => 'CA'})
     assert_equal resp['total_rows'], 1
   end
 
