@@ -1,9 +1,13 @@
+## Version 0.1.4
+* added table.search
+* fixed bug of getting single row
+
 ## Version 0.1.3
-* fix bug for filters escaping
+* fixed bug for filters escaping
 
 ## Version 0.1.2
 * added shadow account support
-* fix bug for url escaping with char &
+* fixed bug for url escaping with char &
 
 ## Version 0.1.1
 * fixed bug in each_row

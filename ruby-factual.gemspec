@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruby-factual}
-  s.version = "0.1.3"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Forrest Cao"]
-  s.date = %q{2011-03-30}
+  s.date = %q{2011-06-17}
   s.description = %q{Ruby gem to access Factual API}
   s.email = %q{forrest@factual.com}
   s.extra_rdoc_files = ["README.md"]
