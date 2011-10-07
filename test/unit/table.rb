@@ -4,75 +4,60 @@ require './test/unit/helper'
 class TableTest < Factual::TestCase # :nodoc:
   def setup
     api = Factual::Api.new(:api_key => API_KEY, :debug => DEBUG_MODE)
-
-    @table = api.get_table(TABLE_KEY)
+    @table = api.get_table(TABLE_NAME)
   end
 
-  def test_metadata
-    assert_equal @table.name, TABLE_NAME
-    assert_equal @table.creator, TABLE_OWNER
+  def test_metadata 
+    assert_equal @table.title, "Places"
   end
 
   def test_each_row
     states = []
     @table.each_row do |state_info|
-      fact = state_info['state']
+      fact = state_info['region']
       states << fact.value
     end
-
+    
     assert_equal states.length, TOTAL_ROWS
   end
 
   def test_search
     row = @table.search('hawaii').find_one
-    assert_equal row["state"].value, "hawaii"
+    assert_equal row["region"].value, "HI"
 
     row = @table.search('hi', 'hawaii').find_one
-    assert_equal row["state"].value, "hawaii"
+    assert_equal row["region"].value, "HI"
   end
 
   def test_filtering
-    row = @table.filter(:two_letter_abbrev => 'WA').find_one
-    assert_equal row["state"].value, "Washington"
+    row = @table.filter(:name => 'Starbucks').find_one
+    assert_equal row["region"].value, "DC"
 
-    row = @table.filter(:two_letter_abbrev => { '$has' => 'a' }).sort(:state => 1).find_one
-    assert_equal row["state"].value, "California"
+    row = @table.filter(:name => { '$bw' => 'Starbucks' }).find_one
+    assert_equal row["region"].value, "TN"
   end
 
   def test_sorting
-    row = @table.sort(:state => 1).find_one
-    assert_equal row["state"].value, "California"
-
-    # secondary sort
-    row = @table.sort({:test_field1 => 1}, {:state => -1}).find_one
-    assert_equal row["state"].value, "Washington"
-  end
-
-  def test_each_row
-    states = []
-    @table.each_row do |row|
-      states << row['state'].value
-    end
-
-    assert_equal states.length, @table.total_row_count
+    row = @table.sort(:name => 'asc').find_one
+    assert_equal row["region"].value, "TX"
   end
 
   def test_paging
-    states = []
+    regions = []
     @table.page(2, :size => 2).each_row do |row|
-      states << row['state'].value
+      regions << row['region'].value
     end
 
-    assert_equal states.length, 2
-    assert_not_equal states[0], "California"
+    assert_equal regions.length, 2
+    assert_not_equal regions[0], "TX"
   end
 
-  def test_adding_row
-    row = @table.input(:two_letter_abbrev => 'NE', :state => 'Nebraska')
-  end
+  # def test_adding_row
+  #   row = @table.input(:two_letter_abbrev => 'NE', :state => 'Nebraska')
+  # end
   
-  def test_row
-    row = Factual::Row.new(@table, SUBJECT_KEY)
-    assert_equal row['state'].value, 'California'
-  end
+  # def test_row
+  #   row = Factual::Row.new(@table, FACTUAL_ID)
+  #   # assert_equal row['region'].value, 'CA'
+  # end
 end

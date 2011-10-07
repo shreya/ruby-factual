@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Forrest Cao"]
   s.date = %q{2011-06-17}
   s.description = %q{Ruby gem to access Factual API}
-  s.email = %q{forrest@factual.com}
+  s.email = %q{sbhatia261@gmail.com}
   s.extra_rdoc_files = ["README.md"]
   s.files = ["README.md", "lib/factual.rb"]
   s.homepage = %q{http://github.com/Factual/ruby-factual}

@@ -3,19 +3,17 @@ require 'test/unit'
 module Factual
   class TestCase < Test::Unit::TestCase # :nodoc:
     # api_key for demo, read-only 
-    API_KEY     = 'S8bAIJhnEnVp05BmMBNeI17Kz3waDgRYU4ykpKU2MVZAMydjiuy88yi1vhBxGsZC'
-    API_VERSION = 2
-    API_DOMAIN  = 'www.factual.com'
+    API_KEY     = 'p7kwKMFUSyVi64FxnqWmeSDEI41kzE3vNWmwY9Zi'
+    API_VERSION = 3
+    API_DOMAIN  = "api.v#{API_VERSION}.factual.com"
     DEBUG_MODE  = false
 
-    TABLE_KEY   = 'g9R1u2'
-    TABLE_NAME  = 'us_states_two_letter_abbrevs'
-    TABLE_OWNER = 'gil'
+    TABLE_NAME   = 'places'
     WRONG_KEY   = '$1234$'
-    TOTAL_ROWS  = 5
+    TOTAL_ROWS  = 20
 
     STATE_FIELD_ID = 14
-    SUBJECT_KEY    = 'HELHLPlaobdmCbWFs0uva1AdcT4'
+    FACTUAL_ID    = "f11426ea-abd8-46c7-be17-a2b950d04535"
 
     def test_default
     end

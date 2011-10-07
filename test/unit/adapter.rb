@@ -1,5 +1,5 @@
-require 'test/unit/helper'
-require 'lib/factual'
+require './test/unit/helper'
+require './lib/factual'
 
 class AdapterTest < Factual::TestCase # :nodoc:
   def setup
@@ -7,12 +7,12 @@ class AdapterTest < Factual::TestCase # :nodoc:
   end
 
   def test_read_row
-    row_data = @adapter.read_row(TABLE_KEY, SUBJECT_KEY)
-    assert_not_nil row_data
+    # row_data = @adapter.read_row(TABLE_NAME, FACTUAL_ID)
+    # assert_not_nil row_data
   end
 
-  def test_corret_request
-    url = "/tables/#{TABLE_KEY}/schema.json"
+  def test_correct_request
+    url = "/t/#{TABLE_NAME}/schema.json"
 
     assert_nothing_raised do
       resp = @adapter.api_call(url)
@@ -20,39 +20,22 @@ class AdapterTest < Factual::TestCase # :nodoc:
   end
 
   def test_wrong_request
-    url = "/tables/#{WRONG_KEY}/schema.json"
-
-    assert_raise Factual::ApiError do
+    url = "/t/#{WRONG_KEY}/schema.json"
+    assert_raise JSON::ParserError do
       resp = @adapter.api_call(url)
     end
   end
 
   def test_getting_schema
-    schema = @adapter.schema(TABLE_KEY)
+    schema = @adapter.schema(TABLE_NAME)
 
     assert_not_nil schema
-    assert_equal schema['name'], TABLE_NAME
-  end
-
-  def test_reading_table
-    resp = @adapter.read_table(TABLE_KEY)
-    assert_equal resp['total_rows'], TOTAL_ROWS
+    assert_equal schema['title'], TABLE_NAME.capitalize
   end
 
   def test_reading_table_with_filter
-    resp = @adapter.read_table(TABLE_KEY, :filters => {:two_letter_abbrev => 'CA'})
-    assert_equal resp['total_rows'], 1
+    resp = @adapter.read_table(TABLE_NAME, :filters => {:name => 'Starbucks'})
+    assert_equal resp['included_rows'], 20
   end
 
-  def test_inputting
-    params = {
-      :subjectKey => SUBJECT_KEY,
-      :value      => 'sample text',
-      :fieldId    => STATE_FIELD_ID
-    }
-
-    assert_raise Factual::ApiError do
-      @adapter.input(TABLE_KEY, params)
-    end
-  end
 end
